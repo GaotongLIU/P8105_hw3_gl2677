@@ -63,3 +63,19 @@ instacart %>%
   guides(fill = guide_legend(nrow = 10, byrow = TRUE))
 ```
 
+```{r table1}
+instacart %>% 
+  filter(aisle == c("baking ingredients","dog food care", "packaged vegetables fruits")) %>%
+  group_by(product_name, aisle) %>% 
+  summarize(n = n()) %>% 
+  group_by(aisle) %>% 
+  filter(min_rank(desc(n)) <= 3) %>%
+  arrange(aisle) %>% 
+  ungroup() %>%
+  select(-aisle) %>% 
+  pivot_wider(names_from = product_name,
+              values_from = n) %>% 
+  knitr::kable(caption = "The number of times each item is ordered against the three most popular items in each aisle.") %>% 
+  add_header_above(c("baking ingredients" = 3,"dog food care" = 3, "packaged vegetables fruits" = 3))
+```
+
