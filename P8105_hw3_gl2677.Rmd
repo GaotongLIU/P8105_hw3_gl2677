@@ -129,3 +129,14 @@ states_2010 = overall_health %>%
   pull(locationabbr)
 ```
 In 2002, total `36` states (``r states_2002``) were observed at 7 or more locations. In 2010, total `45` states (``r states_2010``) were observed at 7 or more locations. 
+```{r excellent}
+overall_health %>% 
+  filter(response == "Excellent") %>% 
+  group_by(locationabbr,year) %>% 
+  summarize(mean_data_value = mean(data_value)) %>% 
+  ggplot(aes(x = year, y = mean_data_value, color = locationabbr)) +
+  geom_line() +
+  labs(title = "Average data value over time within a state",
+       subtitle = "limited to Excellent responses")
+```
+
