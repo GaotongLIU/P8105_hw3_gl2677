@@ -140,3 +140,32 @@ overall_health %>%
        subtitle = "limited to Excellent responses")
 ```
 
+```{r two-panel}
+data_value_2006 = overall_health %>%
+  filter(year == 2006) %>% 
+  filter(locationabbr == "NY") %>% 
+  group_by(response) %>% 
+  ggplot(aes(x = locationdesc, y = data_value, 
+             color = response, group = response)) +
+  geom_point() +
+  geom_line() +
+  theme(axis.text.x = element_text(angle = 45,hjust = 1),
+        legend.position = "none") +
+  labs(title = "Distribution of data_value for responses among locations in NY State in 2006",
+       x = "")
+
+data_value_2010 = overall_health %>%
+  filter(year == 2010) %>% 
+  filter(locationabbr == "NY") %>% 
+  group_by(response) %>% 
+  ggplot(aes(x = locationdesc, y = data_value, 
+             color = response, group = response)) +
+  geom_point() +
+  geom_line() +
+  theme(axis.text.x = element_text(angle = 45,hjust = 1))+
+  labs(title = "Distribution of data_value for responses among locations in NY State in 2010",
+       x = "")
+data_value_2006 / data_value_2010
+```
+
+
