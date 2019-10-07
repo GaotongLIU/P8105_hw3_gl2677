@@ -13,7 +13,7 @@ library(tidyverse)
 library(patchwork)
 library(kableExtra)
 library(p8105.datasets)
-data("instacart")
+
 
 knitr::opts_chunk$set(
 	echo = TRUE,
@@ -36,14 +36,18 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 There are 1,384,617 observations of 131,209 unique users and 15 vaiables in the `instacart` dataset, where each row is a product from an order. The key variables are the ID and name of product, aisle, department, together with the hour of the day and the day of the week on which the order was placed.
 
 Here is an illstrative example of observations. The first 8 rows are from the same order with ID numerber `1` for the user with ID numerber `112108`. This is the `4`th order this user has placed, and it has been `9` days since the last order. In this order, there are total 8 products. The `1`st product added to cart was `Bulgarian Yogurt` with ID number `49302` from `yogurt` aisle with ID number`120`, `dairy eggs` department with ID number `16`. This producthas been ordered by this user in the past and it was placed on `10` o'clock, `Thursday` this time. 
+
 ```{r number of aisle, eval=FALSE}
+data("instacart")
 aisle = instacart %>% 
   group_by(aisle) %>% 
   summarize(n = n()) 
 aisle %>% 
   filter(min_rank(desc(n)) == 1)
 ```
+
 * There are 134 aisles are in the dataset, and `fresh vegetables` are the most items ordered from. 
+
 ```{r plot}
 instacart %>% 
   mutate(aisle_id = as.character(aisle_id),
@@ -101,3 +105,27 @@ instacart %>%
 ```
 
 ## Problem 1
+```{r clean data}
+data("brfss_smart2010")
+overall_health = brfss_smart2010 %>% 
+  janitor::clean_names() %>% 
+  filter(topic == "Overall Health" & response !="Very good") %>% 
+  mutate(response = forcats::fct_relevel(response, c("Poor", "Good", "Fair", "Excellent"))) 
+```
+
+```{r states}
+states_2002 = overall_health %>% 
+  filter(year == 2002) %>% 
+  group_by(locationabbr) %>% 
+  summarize(n = n()) %>% 
+  filter(n >= 7) %>% 
+  pull(locationabbr)
+
+states_2010 = overall_health %>% 
+  filter(year == 2010) %>% 
+  group_by(locationabbr) %>% 
+  summarize(n = n()) %>% 
+  filter(n >= 7) %>% 
+  pull(locationabbr)
+```
+In 2002, total `36` states (``r states_2002``) were observed at 7 or more locations. In 2010, total `45` states (``r states_2010``) were observed at 7 or more locations. 
