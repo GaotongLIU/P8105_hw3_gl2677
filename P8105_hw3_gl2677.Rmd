@@ -31,3 +31,15 @@ scale_fill_discrete = scale_fill_viridis_d
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
 ```
+
+## Problem 0
+describing some key variables, and giving illstrative examples of observations. 
+There are 1,384,617 observations of 131,209 unique users and 15 vaiables in the `instacart` dataset, where each row is a product from an order. The key variables are 
+```{r number of aisle, eval=FALSE}
+aisle = instacart %>% 
+  group_by(aisle) %>% 
+  summarize(n = n()) 
+aisle %>% 
+  filter(min_rank(desc(n)) == 1)
+```
+* There are 134 aisles are in the dataset, and `fresh vegetables` are the most items ordered from. 
