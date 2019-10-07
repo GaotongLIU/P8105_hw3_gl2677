@@ -79,3 +79,23 @@ instacart %>%
   add_header_above(c("baking ingredients" = 3,"dog food care" = 3, "packaged vegetables fruits" = 3))
 ```
 
+```{r table2}
+instacart %>% 
+  filter(product_name %in% c("Pink Lady Apples","Coffee Ice Cream")) %>%
+  group_by(product_name, order_dow) %>% 
+  summarize(mean_h = mean(order_hour_of_day)) %>% 
+  pivot_wider(names_from = product_name,
+              values_from = mean_h) %>% 
+  mutate(order_dow = recode(order_dow, `0` = "Sunday",
+                            `1` = "Monday",
+                            `2` = "Tuesday",
+                            `3` = "Wednesday",
+                            `4` = "Thursday",
+                            `5` = "Friday",
+                            `6` = "Saturday")) %>% 
+  rename("order day" = order_dow) %>% 
+  knitr::kable(digits = 0,
+               caption = "The mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week")
+
+```
+
