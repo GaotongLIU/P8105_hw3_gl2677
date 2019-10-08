@@ -204,3 +204,16 @@ day_plot = activity %>%
 ```
 
 * The accelerometer acticity counts for all five weeks increase on Wednesday comparing to Tuesday. and they all are numerically similar between Tuesday and Thursay. The activity counts on Saturday drop to the same value in week 4 and week 5.
+```{r minute_activity plot}
+activity %>% 
+  group_by(day, hour) %>% 
+  summarize(mean_hour_activity = mean(minute_activity)) %>% 
+  ggplot(aes(x = hour, y = mean_hour_activity,
+             color = day, group = day)) +
+  geom_point(alpha = .3) +
+  geom_line() +
+  xlim(0, 24)
+```
+
+* Describe in words any patterns or conclusions you can make based on this graph.
+
