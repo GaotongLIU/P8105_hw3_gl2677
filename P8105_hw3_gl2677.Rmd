@@ -104,7 +104,7 @@ instacart %>%
 
 ```
 
-## Problem 1
+## Problem 2
 ```{r clean data}
 data("brfss_smart2010")
 overall_health = brfss_smart2010 %>% 
@@ -128,7 +128,7 @@ states_2010 = overall_health %>%
   filter(n >= 7) %>% 
   pull(locationabbr)
 ```
-In 2002, total `36` states (``r states_2002``) were observed at 7 or more locations. In 2010, total `45` states (``r states_2010``) were observed at 7 or more locations. 
+* In 2002, total `36` states (``r states_2002``) were observed at 7 or more locations. In 2010, total `45` states (``r states_2010``) were observed at 7 or more locations. 
 ```{r excellent}
 overall_health %>% 
   filter(response == "Excellent") %>% 
@@ -167,5 +167,21 @@ data_value_2010 = overall_health %>%
        x = "")
 data_value_2006 / data_value_2010
 ```
+
+## Problem 3
+```{r wrangle data, message=FALSE}
+activity = read_csv("./data/accel_data.csv") %>% 
+  janitor::clean_names() %>% 
+  pivot_longer(activity_1:activity_1440, 
+               names_to = "minute",
+               names_prefix = "activity_",
+               values_to = "activity_counts") %>% 
+  mutate(minute = as.numeric(minute),
+         weekday = factor(day %in% c("Sunday", "Saturday"), 
+                          levels = c(TRUE, FALSE), 
+                          labels = c("weekend", "weekday"))) 
+```
+* There are `r nrow(activity)` observations and `r ncol(activity)` variables in `acticity` dataset. The variables are `r colnames(activity)`. For each observation, the dataset shows the activity counts for the exact minute of a 24-hour day starting at midnight on exact day and exact week.
+
 
 
