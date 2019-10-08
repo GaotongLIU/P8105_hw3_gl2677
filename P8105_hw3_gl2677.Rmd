@@ -175,13 +175,32 @@ activity = read_csv("./data/accel_data.csv") %>%
   pivot_longer(activity_1:activity_1440, 
                names_to = "minute",
                names_prefix = "activity_",
-               values_to = "activity_counts") %>% 
+               values_to = "minute_activity") %>% 
   mutate(minute = as.numeric(minute),
+         week = as.factor(week),
+         hour = minute %/% 60,
          weekday = factor(day %in% c("Sunday", "Saturday"), 
                           levels = c(TRUE, FALSE), 
-                          labels = c("weekend", "weekday"))) 
+                          labels = c("weekend", "weekday")),
+         day = forcats::fct_relevel(day, c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday","Sunday")))   
 ```
 * There are `r nrow(activity)` observations and `r ncol(activity)` variables in `acticity` dataset. The variables are `r colnames(activity)`. For each observation, the dataset shows the activity counts for the exact minute of a 24-hour day starting at midnight on exact day and exact week.
 
+```{r day_activity table}
+activity %>% 
+  group_by(week, day) %>% 
+  summarize(day_activity = sum(minute_activity)) %>% 
+  pivot_wider(names_from = day,
+              values_from = day_activity) %>% 
+  knitr::kable(digits = 0) 
 
+day_plot = activity %>% 
+  group_by(week, day) %>% 
+  summarize(day_activity = sum(minute_activity)) %>% 
+  ggplot(aes(x = day, y = day_activity, color = week, group = week)) +
+  geom_point() +
+  geom_line()
 
+```
+
+* The accelerometer acticity counts for all five weeks increase on Wednesday comparing to Tuesday. and they all are numerically similar between Tuesday and Thursay. The activity counts on Saturday drop to the same value in week 4 and week 5.
