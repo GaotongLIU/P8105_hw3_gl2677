@@ -39,34 +39,30 @@ Here is an illstrative example of observations. The first 8 rows are from the sa
 
 ```{r number of aisle, eval=FALSE}
 data("instacart")
-aisle = instacart %>% 
+instacart %>% 
   group_by(aisle) %>% 
-  summarize(n = n()) 
-aisle %>% 
-  filter(min_rank(desc(n)) == 1)
+  summarize(n = n()) %>% 
+  arrange(desc(n))
 ```
 
-* There are 134 aisles are in the dataset, and `fresh vegetables` are the most items ordered from. 
+* There are totally 134 aisles in the dataset. `fresh vegetables` are the most items ordered from, and the majority of items are ordered from `fresh vegetables` and `fresh fruits`.
 
 ```{r plot}
 instacart %>% 
-  mutate(aisle_id = as.character(aisle_id),
-         aisle_name_id = paste(aisle, aisle_id, sep = "-")) %>% 
-  group_by(aisle_id, aisle_name_id) %>% 
+  group_by(aisle) %>% 
   summarize(n = n()) %>% 
   filter(n > 10000) %>% 
-  ungroup %>% 
-  mutate(aisle_id = forcats::fct_reorder(aisle_id, n))  %>% 
-  ggplot(aes(x = aisle_id, y = n, fill = aisle_name_id)) +
+  mutate(aisle = forcats::fct_reorder(aisle, n)) %>% 
+  ggplot(aes(x = aisle, y = n, fill = aisle)) +
   geom_bar(stat = "identity") +
-  viridis::scale_fill_viridis(discrete = TRUE) +
   labs(title = "The number of items ordered in each aisle",
-       x = "Aisle-id",
-       y = "The number of items",
-       fill = "") +
-  theme(legend.key.size = unit(0.1, "cm")) +
-  guides(fill = guide_legend(nrow = 10, byrow = TRUE))
+       x = "Aisle",
+       y = "The number of items") +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1),
+        legend.position = "none")
 ```
+
+* From the plot, it shows most of items ordered in `fresh vegetables`, `fresh fruits`, and `packaged vegetables fruits`, and totally around 375,000 items are oredered in these three aisles. People mainly use The Instacart Online Grocery Shopping to buy vegetables and fruits in 2017.
 
 ```{r table1}
 instacart %>% 
@@ -84,25 +80,27 @@ instacart %>%
   add_header_above(c("baking ingredients" = 3,"dog food care" = 3, "packaged vegetables fruits" = 3))
 ```
 
+* `packaged vegetables fruits` is the most frequently ordered aisles, and `dog food care` is the least frequently ordered ones. Organic ingredients are often picked in these three aisles.
+
 ```{r table2}
 instacart %>% 
   filter(product_name %in% c("Pink Lady Apples","Coffee Ice Cream")) %>%
   group_by(product_name, order_dow) %>% 
-  summarize(mean_h = mean(order_hour_of_day)) %>% 
-  pivot_wider(names_from = product_name,
-              values_from = mean_h) %>% 
+  summarize(mean_h = round(mean(order_hour_of_day))) %>% 
   mutate(order_dow = recode(order_dow, `0` = "Sunday",
                             `1` = "Monday",
                             `2` = "Tuesday",
                             `3` = "Wednesday",
                             `4` = "Thursday",
                             `5` = "Friday",
-                            `6` = "Saturday")) %>% 
-  rename("order day" = order_dow) %>% 
-  knitr::kable(digits = 0,
-               caption = "The mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week")
-
+                            `6` = "Saturday"),
+         mean_h = str_c(mean_h, "00", sep = ":")) %>%
+  pivot_wider(names_from = order_dow,
+              values_from = mean_h) %>% 
+  knitr::kable(caption = "The mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered") 
 ```
+
+* Most of `Coffee Ice Cream` is ordered between two o'clock and three o'clock in the afternoon during the week. `Pink Lady Apples` is ordered with unfixed time, which is between eleven o'clock in the morning and two o'clock in the afternoon.
 
 ## Problem 2
 ```{r clean data}
