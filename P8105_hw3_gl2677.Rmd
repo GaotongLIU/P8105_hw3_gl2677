@@ -55,11 +55,11 @@ instacart %>%
   mutate(aisle = forcats::fct_reorder(aisle, n)) %>% 
   ggplot(aes(x = aisle, y = n, fill = aisle)) +
   geom_bar(stat = "identity") +
+  coord_flip() +
   labs(title = "The number of items ordered in each aisle",
        x = "Aisle",
        y = "The number of items") +
-  theme(axis.text.x = element_text(angle = 60, hjust = 1),
-        legend.position = "none")
+  theme(legend.position = "none")
 ```
 
 * From the plot, it shows most of items ordered in `fresh vegetables`, `fresh fruits`, and `packaged vegetables fruits`, and totally around 375,000 items are oredered in these three aisles. People mainly use The Instacart Online Grocery Shopping to buy vegetables and fruits in 2017.
@@ -197,7 +197,7 @@ activity = read_csv("./data/accel_data.csv") %>%
                           labels = c("weekend", "weekday")),
          day = forcats::fct_relevel(day, c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday","Sunday")))   
 ```
-* There are `r nrow(activity)` observations and `r ncol(activity)` variables in `acticity` dataset. The variables are `r colnames(activity)`. For each observation, the dataset shows the activity counts for the exact minute of a 24-hour day starting at midnight on exact day and exact week.
+* There are `r nrow(activity)` observations and `r ncol(activity)` variables in `acticity` dataset. The variables are ``r colnames(activity)``. For each observation, the dataset shows the activity counts for the exact minute of a 24-hour day starting at midnight on exact day and exact week.
 
 ```{r day_activity table}
 activity %>% 
@@ -205,28 +205,35 @@ activity %>%
   summarize(day_activity = sum(minute_activity)) %>% 
   pivot_wider(names_from = day,
               values_from = day_activity) %>% 
-  knitr::kable(digits = 0) 
+  knitr::kable(digits = 0,
+               caption ="The total activity over the day for five weeks") 
 
-day_plot = activity %>% 
+ activity %>% 
   group_by(week, day) %>% 
   summarize(day_activity = sum(minute_activity)) %>% 
   ggplot(aes(x = day, y = day_activity, color = week, group = week)) +
   geom_point() +
-  geom_line()
-
+  geom_line() +
+  labs(title = "The total activity over the day for five weeks",
+       x = "",
+       y = "Day activity counts")
 ```
 
 * The accelerometer acticity counts for all five weeks increase on Wednesday comparing to Tuesday. and they all are numerically similar between Tuesday and Thursay. The activity counts on Saturday drop to the same value in week 4 and week 5.
+
 ```{r minute_activity plot}
 activity %>% 
-  group_by(day, hour) %>% 
+  group_by(hour, day) %>% 
   summarize(mean_hour_activity = mean(minute_activity)) %>% 
   ggplot(aes(x = hour, y = mean_hour_activity,
              color = day, group = day)) +
-  geom_point(alpha = .3) +
+  geom_point() +
   geom_line() +
-  xlim(0, 24)
+  labs(title = " 24-hour activity time courses for each day ",
+       x = "Hour in the day",
+       y = "Mean hour activity counts")
 ```
 
-* Describe in words any patterns or conclusions you can make based on this graph.
+* The `mean_hour_activity` except on Sunday has the similar pattern that the counts increase starting from around 5:00 and reach the peak around 20:00, then decrease until 23:00. This means the most intense physical activity occurs around eight o'clock in the evening, and he might get up around five o'clock in the morning and go to bed around eleven o'clock in the evening.
+* The `mean_hour_activity` counts on Sunday increase starting from around 5:00 and reach the peak around 11:00, then decrease until 23:00. This means the most intense physical activity occurs around 11 o'clock in the morning, and he might get up around five o'clock in the morning and go to bed around eleven o'clock in the evening.
 
