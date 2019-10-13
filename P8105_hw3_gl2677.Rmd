@@ -11,7 +11,6 @@ editor_options:
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(patchwork)
-library(kableExtra)
 library(p8105.datasets)
 
 
@@ -71,13 +70,9 @@ instacart %>%
   summarize(n = n()) %>% 
   group_by(aisle) %>% 
   filter(min_rank(desc(n)) <= 3) %>%
-  arrange(aisle, desc(n)) %>% 
-  ungroup() %>%
-  select(-aisle) %>% 
-  pivot_wider(names_from = product_name,
-              values_from = n) %>% 
-  knitr::kable(caption = "The number of times each item is ordered against the three most popular items in each aisle.") %>% 
-  add_header_above(c("baking ingredients" = 3,"dog food care" = 3, "packaged vegetables fruits" = 3))
+  arrange(desc(n)) %>% 
+  knitr::kable(caption = "The number of times each item is ordered against the three most popular items in each aisle.")
+
 ```
 
 * `packaged vegetables fruits` is the most frequently ordered aisles, and `dog food care` is the least frequently ordered one.
@@ -192,13 +187,12 @@ activity = read_csv("./data/accel_data.csv") %>%
                values_to = "minute_activity") %>% 
   mutate(minute = as.numeric(minute),
          week = as.factor(week),
-         hour = minute %/% 60,
          weekday = factor(day %in% c("Sunday", "Saturday"), 
                           levels = c(TRUE, FALSE), 
                           labels = c("weekend", "weekday")),
          day = forcats::fct_relevel(day, c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")))   
 ```
-* There are `r nrow(activity)` observations and `r ncol(activity)` variables in `acticity` dataset. The variables are ``r colnames(activity)``. For each observation, the dataset shows the activity counts for the exact minute of a 24-hour day starting at midnight on exact day and exact week.
+* There are `r nrow(activity)` observations and `r ncol(activity)` variables in `acticity` dataset. The variables are ``r colnames(activity)``. `week`, `day` and `weekday` are factor variables, the others are numeric variables. For each observation, the dataset shows the activity counts for the exact minute of a 24-hour day starting at midnight on exact day and exact week.
 
 ```{r day_activity table}
 activity %>% 
@@ -220,10 +214,11 @@ activity %>%
        y = "Day activity counts")
 ```
 
-* The accelerometer acticity counts for all five weeks increase on Wednesday compared to Tuesday. and they all are numerically similar between Tuesday and Thursay. The activity counts on Saturday drop to the same value in week 4 and week 5.
+* The accelerometer acticity counts for all five weeks increase on Wednesday compared to Tuesday. and they all are numerically similar between Tuesday and Thursay. The activity counts on Saturday drop to the same value (1440) in week 4 and week 5.
 
 ```{r minute_activity plot}
 activity %>% 
+  mutate(hour = minute %/% 60) %>% 
   group_by(hour, day) %>% 
   summarize(mean_hour_activity = mean(minute_activity)) %>% 
   ggplot(aes(x = hour, y = mean_hour_activity,
