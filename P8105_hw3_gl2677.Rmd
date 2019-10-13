@@ -62,16 +62,16 @@ instacart %>%
   theme(legend.position = "none")
 ```
 
-* From the plot, it shows most of items ordered in `fresh vegetables`, `fresh fruits`, and `packaged vegetables fruits`, and totally around 375,000 items are oredered in these three aisles. People mainly use The Instacart Online Grocery Shopping to buy vegetables and fruits in 2017.
+* There are 39 aisles with more than 10000 items ordered. The plot shows most of items ordered in `fresh vegetables`, `fresh fruits`, and `packaged vegetables fruits`, and totally around 375,000 items are oredered in these three aisles. People mainly use The Instacart Online Grocery Shopping to buy vegetables and fruits in 2017.
 
 ```{r table1}
 instacart %>% 
-  filter(aisle == c("baking ingredients","dog food care", "packaged vegetables fruits")) %>%
+  filter(aisle %in% c("baking ingredients","dog food care", "packaged vegetables fruits")) %>%
   group_by(product_name, aisle) %>% 
   summarize(n = n()) %>% 
   group_by(aisle) %>% 
   filter(min_rank(desc(n)) <= 3) %>%
-  arrange(aisle) %>% 
+  arrange(aisle, desc(n)) %>% 
   ungroup() %>%
   select(-aisle) %>% 
   pivot_wider(names_from = product_name,
@@ -80,7 +80,7 @@ instacart %>%
   add_header_above(c("baking ingredients" = 3,"dog food care" = 3, "packaged vegetables fruits" = 3))
 ```
 
-* `packaged vegetables fruits` is the most frequently ordered aisles, and `dog food care` is the least frequently ordered ones. Organic ingredients are often picked in these three aisles.
+* `packaged vegetables fruits` is the most frequently ordered aisles, and `dog food care` is the least frequently ordered ones.
 
 ```{r table2}
 instacart %>% 
@@ -98,6 +98,7 @@ instacart %>%
   pivot_wider(names_from = order_dow,
               values_from = mean_h) %>% 
   knitr::kable(caption = "The mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered") 
+
 ```
 
 * Most of `Coffee Ice Cream` is ordered between two o'clock and three o'clock in the afternoon during the week. `Pink Lady Apples` is ordered with unfixed time, which is between eleven o'clock in the morning and two o'clock in the afternoon.
@@ -107,8 +108,8 @@ instacart %>%
 data("brfss_smart2010")
 overall_health = brfss_smart2010 %>% 
   janitor::clean_names() %>% 
-  filter(topic == "Overall Health" & response !="Very good") %>% 
-  mutate(response = forcats::fct_relevel(response, c("Poor", "Fair", "Good",  "Excellent")),
+  filter(topic == "Overall Health") %>% 
+  mutate(response = forcats::fct_relevel(response, c("Poor", "Fair", "Good", "Very good", "Excellent")),
          state = locationabbr,
          county = locationdesc) 
 ```
@@ -117,6 +118,7 @@ overall_health = brfss_smart2010 %>%
 states_2002 = overall_health %>% 
   filter(year == 2002) %>% 
   group_by(state) %>% 
+  distinct(county) %>% 
   summarize(n = n()) %>% 
   filter(n >= 7) %>% 
   arrange(desc(n)) 
@@ -124,13 +126,14 @@ states_2002 = overall_health %>%
 states_2010 = overall_health %>% 
   filter(year == 2010) %>% 
   group_by(state) %>% 
+  distinct(county) %>% 
   summarize(n = n()) %>% 
   filter(n >= 7) %>% 
   arrange(desc(n)) 
 ```
-* In 2002, total `36` states ([most locations first]``r pull(states_2002, state)``) were observed at 7 or more locations. The range of the number of locations in the state is from `r max(pull(states_2002, n))` to `r min(pull(states_2002, n))`.
-* In 2010, total `45` states ([most locations first]``r pull(states_2010, state)``) were observed at 7 or more locations. The range of the number of locations in the state is from `r max(pull(states_2010, n))` to `r min(pull(states_2010, n))`.
-* The maximum number of locations in the state increase in 2010 comparing to 2002. 
+* In 2002, total ``r nrow(states_2002)`` states ([most locations first]``r pull(states_2002, state)``) were observed at 7 or more locations. The range of the number of locations in the state is from `r max(pull(states_2002, n))` to `r min(pull(states_2002, n))`.
+* In 2010, total ``r nrow(states_2010)`` states ([most locations first]``r pull(states_2010, state)``) were observed at 7 or more locations. The range of the number of locations in the state is from `r max(pull(states_2010, n))` to `r min(pull(states_2010, n))`.
+* The number of locations in the state increases in 2010 comparing to 2002. 
 
 ```{r excellent}
 overall_health %>% 
@@ -153,10 +156,9 @@ data_value_2006 = overall_health %>%
   filter(year == 2006) %>% 
   filter(state == "NY") %>% 
   group_by(response) %>% 
-  ggplot(aes(x = county, y = data_value, 
-             color = response, group = response)) +
-  geom_point() +
-  geom_line() +
+  ggplot(aes(x = data_value, 
+             fill = response, group = response)) +
+  geom_density(alpha = .5) +
   theme(axis.text.x = element_text(angle = 45,hjust = 1),
         legend.position = "none") +
   labs(title = "Distribution of data-value for responses among locations in NY state in 2006",
@@ -167,19 +169,18 @@ data_value_2010 = overall_health %>%
   filter(year == 2010) %>% 
   filter(state == "NY") %>% 
   group_by(response) %>% 
-  ggplot(aes(x = county, y = data_value, 
-             color = response, group = response)) +
-  geom_point() +
-  geom_line() +
-  theme(axis.text.x = element_text(angle = 45,hjust = 1))+
+  ggplot(aes(x = data_value, 
+             fill = response, group = response)) +
+  geom_density(alpha = .5) +
+  theme(axis.text.x = element_text(angle = 45,hjust = 1)) +
   labs(title = "Distribution of data-value for responses among locations in NY state in 2010",
        x = "",
        y = "Data-value(%)")
 data_value_2006 / data_value_2010
 ```
 
-* Most of counties in NY state share the similar pattern that `Poor` response associates with lowest `data_value`, `Good` response associates with highest `data_value`. `Excellent` response has higher value than `Fair` response, but lower than` Good` response both in 2006 and 2010. 
-* Only New York County has different pattern both in 2006 and 2010. For New York County, `Excellent` response has the highest value ,and `Good`, `Fair` and `Poor` responses are descending in order.
+* For 2006 and 2010, the peaks of `data_value`increase in the order of `Poor`,`Fair`,  `Excellent`, `Good` and `Very good`. 
+* The peaks of `data_value` decrease for `Poor` and `Fair` in 2010 comparing to thoes in 2006, and the peaks of `data_value` increase for Excellent`, `Good` and `Very good` in 2010 comparing to thoes in 2006.
 
 ## Problem 3
 ```{r wrangle data, message=FALSE}
@@ -195,7 +196,7 @@ activity = read_csv("./data/accel_data.csv") %>%
          weekday = factor(day %in% c("Sunday", "Saturday"), 
                           levels = c(TRUE, FALSE), 
                           labels = c("weekend", "weekday")),
-         day = forcats::fct_relevel(day, c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday","Sunday")))   
+         day = forcats::fct_relevel(day, c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")))   
 ```
 * There are `r nrow(activity)` observations and `r ncol(activity)` variables in `acticity` dataset. The variables are ``r colnames(activity)``. For each observation, the dataset shows the activity counts for the exact minute of a 24-hour day starting at midnight on exact day and exact week.
 
