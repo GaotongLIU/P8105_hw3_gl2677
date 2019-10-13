@@ -33,9 +33,9 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 ```
 
 ## Problem 1
-There are 1,384,617 observations of 131,209 unique users and 15 vaiables in the `instacart` dataset, where each row is a product from an order. The key variables are the ID and name of product, aisle, department, together with the hour of the day and the day of the week on which the order was placed.
+There are 1,384,617 observations of 131,209 unique users and 15 variables in the `instacart` dataset, where each row is a product from an order. The key variables are the ID and name of the product, aisle, department, together with the hour of the day and the day of the week on which the order was placed.
 
-Here is an illstrative example of observations. The first 8 rows are from the same order with ID numerber `1` for the user with ID numerber `112108`. This is the `4`th order this user has placed, and it has been `9` days since the last order. In this order, there are total 8 products. The `1`st product added to cart was `Bulgarian Yogurt` with ID number `49302` from `yogurt` aisle with ID number`120`, `dairy eggs` department with ID number `16`. This producthas been ordered by this user in the past and it was placed on `10` o'clock, `Thursday` this time. 
+Here is an illustrative example of observations. The first 8 rows are from the same order with ID number `1` for the user with ID number `112108`. This is the `4`th order this user has placed, and it has been `9` days since the last order. In this order, there are totally 8 products. The `1`st product added to cart was `Bulgarian Yogurt` with ID number `49302` from `yogurt` aisle with ID number`120`, `dairy eggs` department with ID number `16`. This product has been ordered by this user in the past and it was placed at `10` o'clock, `Thursday` this time. 
 
 ```{r number of aisle, eval=FALSE}
 data("instacart")
@@ -80,7 +80,7 @@ instacart %>%
   add_header_above(c("baking ingredients" = 3,"dog food care" = 3, "packaged vegetables fruits" = 3))
 ```
 
-* `packaged vegetables fruits` is the most frequently ordered aisles, and `dog food care` is the least frequently ordered ones.
+* `packaged vegetables fruits` is the most frequently ordered aisles, and `dog food care` is the least frequently ordered one.
 
 ```{r table2}
 instacart %>% 
@@ -131,9 +131,9 @@ states_2010 = overall_health %>%
   filter(n >= 7) %>% 
   arrange(desc(n)) 
 ```
-* In 2002, total ``r nrow(states_2002)`` states ([most locations first]``r pull(states_2002, state)``) were observed at 7 or more locations. The range of the number of locations in the state is from `r max(pull(states_2002, n))` to `r min(pull(states_2002, n))`.
-* In 2010, total ``r nrow(states_2010)`` states ([most locations first]``r pull(states_2010, state)``) were observed at 7 or more locations. The range of the number of locations in the state is from `r max(pull(states_2010, n))` to `r min(pull(states_2010, n))`.
-* The number of locations in the state increases in 2010 comparing to 2002. 
+* In 2002, totally ``r nrow(states_2002)`` states ([most locations first]``r pull(states_2002, state)``) were observed at 7 or more locations. The range of the number of locations in the state is from `r max(pull(states_2002, n))` to `r min(pull(states_2002, n))`.
+* In 2010, totally ``r nrow(states_2010)`` states ([most locations first]``r pull(states_2010, state)``) were observed at 7 or more locations. The range of the number of locations in the state is from `r max(pull(states_2010, n))` to `r min(pull(states_2010, n))`.
+* The number of locations in the state increases in 2010 compared to 2002. 
 
 ```{r excellent}
 overall_health %>% 
@@ -180,7 +180,7 @@ data_value_2006 / data_value_2010
 ```
 
 * For 2006 and 2010, the peaks of `data_value`increase in the order of `Poor`,`Fair`,  `Excellent`, `Good` and `Very good`. 
-* The peaks of `data_value` decrease for `Poor` and `Fair` in 2010 comparing to thoes in 2006, and the peaks of `data_value` increase for Excellent`, `Good` and `Very good` in 2010 comparing to thoes in 2006.
+* The peaks of `data_value` decrease for `Poor` and `Fair` in 2010 compared to those in 2006, and the peaks of `data_value` increase for `Excellent`, `Good` and `Very good` in 2010 compared to those in 2006.
 
 ## Problem 3
 ```{r wrangle data, message=FALSE}
@@ -220,7 +220,7 @@ activity %>%
        y = "Day activity counts")
 ```
 
-* The accelerometer acticity counts for all five weeks increase on Wednesday comparing to Tuesday. and they all are numerically similar between Tuesday and Thursay. The activity counts on Saturday drop to the same value in week 4 and week 5.
+* The accelerometer acticity counts for all five weeks increase on Wednesday compared to Tuesday. and they all are numerically similar between Tuesday and Thursay. The activity counts on Saturday drop to the same value in week 4 and week 5.
 
 ```{r minute_activity plot}
 activity %>% 
@@ -235,6 +235,6 @@ activity %>%
        y = "Mean hour activity counts")
 ```
 
-* The `mean_hour_activity` except on Sunday has the similar pattern that the counts increase starting from around 5:00 and reach the peak around 20:00, then decrease until 23:00. This means the most intense physical activity occurs around eight o'clock in the evening, and he might get up around five o'clock in the morning and go to bed around eleven o'clock in the evening.
-* The `mean_hour_activity` counts on Sunday increase starting from around 5:00 and reach the peak around 11:00, then decrease until 23:00. This means the most intense physical activity occurs around 11 o'clock in the morning, and he might get up around five o'clock in the morning and go to bed around eleven o'clock in the evening.
+* The `mean_hour_activity` except on Sunday has the similar pattern that the counts increase starting from around 5:00 and reach a peak around 20:00, then decrease until 23:00. This means the most intense physical activity occurs around eight o'clock in the evening, and he might get up around five o'clock in the morning and go to bed around eleven o'clock in the evening.
+* The `mean_hour_activity` counts on Sunday increase starting from around 5:00 and reach a peak around 11:00, then decrease until 23:00. This means the most intense physical activity occurs around 11 o'clock in the morning, and he might get up around five o'clock in the morning and go to bed around eleven o'clock in the evening.
 
